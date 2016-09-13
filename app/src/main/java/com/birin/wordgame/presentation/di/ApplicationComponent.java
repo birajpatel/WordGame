@@ -1,6 +1,8 @@
 package com.birin.wordgame.presentation.di;
 
 
+import com.birin.wordgame.presentation.di.home.HomeComponent;
+import com.birin.wordgame.presentation.di.home.HomeModule;
 import com.birin.wordgame.presentation.di.threading.SchedulerModule;
 import com.birin.wordgame.presentation.di.timer.ClockModule;
 
@@ -16,5 +18,6 @@ import dagger.Component;
         ClockModule.class})
 public interface ApplicationComponent {
 
+    HomeComponent plus(HomeModule homeModule);
 
 }
