@@ -9,6 +9,9 @@ import rx.Observable;
  */
 public class ScoreUseCase {
 
+    public static final int WRONG_ANSWER_PENALTY = 5;
+    public static final int RIGHT_ANSWER_BONUS = 10;
+
     private ScoreManager scoreManager;
 
     public ScoreUseCase(ScoreManager scoreManager) {
@@ -16,23 +19,23 @@ public class ScoreUseCase {
     }
 
     public void rightAnswered() {
-
+        scoreManager.incrementScore(RIGHT_ANSWER_BONUS);
     }
 
     public void wrongAnswered() {
-
+        scoreManager.decrementScore(WRONG_ANSWER_PENALTY);
     }
 
     public void notAnswered() {
-
+        // No penalty yet !!
     }
 
     public int currentScore() {
-        return 0;
+        return scoreManager.currentScore();
     }
 
     public Observable<Integer> scoreObservable() {
-        return null;
+        return scoreManager.scoreObservable();
     }
 
 }
