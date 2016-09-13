@@ -21,6 +21,8 @@ public class CountUptoTimer {
     }
 
     public Observable<Integer> tick() {
-        return null;
+        int count = end - start + 1;
+        Observable<Integer> range = Observable.range(start, count);
+        return Observable.zip(range, clock.tick(), (progress, tick) -> progress);
     }
 }

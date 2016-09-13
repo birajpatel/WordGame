@@ -19,7 +19,9 @@ public class CountdownTimer {
     }
 
     public Observable<Integer> tick() {
-        return null;
+        Observable<Integer> reversedRange = Observable.range(1, start)
+                                                      .map(i -> start - i);
+        return Observable.zip(reversedRange, clock.tick(), (progress, tick) -> progress);
     }
 
 }
