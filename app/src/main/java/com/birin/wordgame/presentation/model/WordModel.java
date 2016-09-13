@@ -1,7 +1,7 @@
 package com.birin.wordgame.presentation.model;
 
 /**
- Created by Biraj on 9/11/16.
+ Created by Biraj on 9/14/16.
  */
 public class WordModel {
 

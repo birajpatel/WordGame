@@ -18,18 +18,21 @@ public class HomePresenter {
     }
 
     public void onResume() {
-
+        highscoreSubscription = highscoreUseCase.highscoreObservable()
+                                                .subscribe(homeView::updateHighScore);
     }
 
     public void onPause() {
-
+        if (null != highscoreSubscription && !highscoreSubscription.isUnsubscribed()) {
+            highscoreSubscription.unsubscribe();
+        }
     }
 
     public void setView(HomeView view) {
-
+        this.homeView = view;
     }
 
     public void startClicked() {
-
+        homeView.startGame();
     }
 }
