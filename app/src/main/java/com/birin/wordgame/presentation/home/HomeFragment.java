@@ -1,5 +1,7 @@
 package com.birin.wordgame.presentation.home;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 import com.birin.wordgame.R;
 import com.birin.wordgame.presentation.BaseFragment;
 import com.birin.wordgame.presentation.di.home.HomeModule;
+import com.birin.wordgame.presentation.game.GameActivity;
 
 import javax.inject.Inject;
 
@@ -50,7 +53,9 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
     @Override
     public void startGame() {
-
+        Activity activity = getActivity();
+        Intent intent = new Intent(activity, GameActivity.class);
+        activity.startActivity(intent);
     }
 
     @Override
