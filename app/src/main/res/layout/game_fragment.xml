@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/state_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_medium">
+
+        <TextView
+            android:id="@+id/score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Temp"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            />
+
+        <TextView
+            android:id="@+id/high_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/score"
+            android:text="Temp"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            />
+
+        <TextView
+            android:id="@+id/game_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/score"
+            android:text="Temp"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/word_english"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/score"
+        android:layout_gravity="center_horizontal"
+        android:text="Temp"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+        />
+
+    <LinearLayout
+        android:id="@+id/falling_word_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/word_translated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/action_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_medium">
+
+        <Button
+            android:id="@+id/correct"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/correct"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            />
+
+        <Button
+            android:id="@+id/wrong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/wrong"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

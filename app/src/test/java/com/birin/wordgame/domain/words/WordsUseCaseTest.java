@@ -133,7 +133,7 @@ public class WordsUseCaseTest {
     }
 
     @Test
-    public void incrementsIndexOnNewWord() {
+    public void shouldIncrementsIndexOnNewWord() {
         wordsUseCase.loadNewWord();
         wordsUseCase.loadNewWord();
         assertEquals(2, wordsUseCase.getIndex());

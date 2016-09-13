@@ -5,66 +5,166 @@ import com.birin.wordgame.domain.score.ScoreUseCase;
 import com.birin.wordgame.domain.timer.TimerUseCase;
 import com.birin.wordgame.domain.words.Word;
 import com.birin.wordgame.domain.words.WordsUseCase;
+import com.birin.wordgame.presentation.model.WordModel;
 import com.birin.wordgame.presentation.model.WordsModelMapper;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.schedulers.TestScheduler;
+
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  Created by Biraj on 9/14/16.
  */
 public class GamePresenterTest {
 
-    private GameView gameView;
-    private WordsUseCase wordsUseCase;
-    private TimerUseCase timerUseCase;
-    private ScoreUseCase scoreUseCase;
-    private HighscoreUseCase highscoreUseCase;
-    private WordsModelMapper wordsModelMapper;
-    private Word currentWord;
-    private boolean isGamePaused;
+    private GamePresenter gamePresenter;
+    private Word mockWord;
+    private WordModel mockWordModel;
 
-    public GamePresenterTest(WordsUseCase wordsUseCase, TimerUseCase timerUseCase,
-                             ScoreUseCase scoreUseCase, HighscoreUseCase highscoreUseCase,
-                             WordsModelMapper wordsModelMapper) {
-        this.wordsUseCase = wordsUseCase;
-        this.timerUseCase = timerUseCase;
-        this.scoreUseCase = scoreUseCase;
-        this.highscoreUseCase = highscoreUseCase;
-        this.wordsModelMapper = wordsModelMapper;
+    @Mock private GameView gameView;
+    @Mock private WordsUseCase wordsUseCase;
+    @Mock private ScoreUseCase scoreUseCase;
+    @Mock private HighscoreUseCase highscoreUseCase;
+    @Mock private TimerUseCase timerUseCase;
+    @Mock private WordsModelMapper modelMapper;
+
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        gamePresenter = new GamePresenter(wordsUseCase, timerUseCase, scoreUseCase,
+                                          highscoreUseCase, modelMapper);
+        gamePresenter.setGameView(gameView);
+
+        mockWord = new Word("English", "Spanish", true);
+        mockWordModel = new WordModel("English", "Spanish");
+        when(wordsUseCase.wordObservable()).thenReturn(Observable.just(mockWord));
+        when(modelMapper.map(mockWord)).thenReturn(mockWordModel);
+        when(wordsUseCase.wordTimerProgressObservable()).thenReturn(Observable.just(1f));
+        when(timerUseCase.tickObservable()).thenReturn(Observable.just(1));
+        when(scoreUseCase.scoreObservable()).thenReturn(Observable.just(1));
+        when(highscoreUseCase.highscoreObservable()).thenReturn(Observable.just(1));
     }
 
-    public void setGameView(GameView gameView) {
-        this.gameView = gameView;
+    @Test
+    public void shouldLoadWordOnInitialize() {
+        gamePresenter.initialize();
+        verify(wordsUseCase).wordObservable();
+        verify(gameView).loadWord(mockWordModel);
     }
 
-
-    public void initialize() {
-
+    @Test
+    public void shouldUpdateWordTimerOnInitialize() {
+        gamePresenter.initialize();
+        verify(wordsUseCase).wordTimerProgressObservable();
+        verify(gameView).updateWordProgress(anyInt());
     }
 
-    public void setCurrentWord(Word newWord) {
-        this.currentWord = newWord;
+    @Test
+    public void shouldUpdateGameTimerOnInitialize() {
+        gamePresenter.initialize();
+        verify(timerUseCase).tickObservable();
+        verify(gameView).updateGameTimer(anyInt());
     }
 
-    public boolean isGamePaused() {
-        return isGamePaused;
+    @Test
+    public void shouldNotifyGamePauseToUsecases() {
+        gamePresenter.pauseGame();
+        verify(timerUseCase).pauseGame();
+        verify(wordsUseCase).pauseGame();
     }
 
-    public void pauseGame() {
-        isGamePaused = true;
+    @Test
+    public void shouldUnsubscribeOnGamePause() {
+        gamePresenter.initialize();
+        assertEquals(false, gamePresenter.getSubscriptions()
+                                         .isUnsubscribed());
+        gamePresenter.pauseGame();
+        assertEquals(false, gamePresenter.getSubscriptions()
+                                         .hasSubscriptions());
     }
 
-    public void resumeGame() {
-        if (isGamePaused == true) {
-            isGamePaused = false;
-        }
+    @Test
+    public void shouldNotifyGameResumeToUseCases() {
+        gamePresenter.initialize();
+        gamePresenter.resumeGame();
+        assertEquals(false, gamePresenter.isGamePaused());
+        verify(timerUseCase, times(0)).resumeGame();
+        verify(wordsUseCase, times(0)).resumeGame();
+
+        gamePresenter.pauseGame();
+        assertEquals(true, gamePresenter.isGamePaused());
+        gamePresenter.resumeGame();
+        assertEquals(false, gamePresenter.isGamePaused());
+        verify(timerUseCase).resumeGame();
+        verify(wordsUseCase).resumeGame();
     }
 
-    public void correctClicked() {
-
+    @Test
+    public void shouldCallNotAnsweredCalledOn100Percent() {
+        TestScheduler mockScheduler = new TestScheduler();
+        when(wordsUseCase.wordTimerProgressObservable()).thenReturn(
+                Observable.interval(WordsUseCase.PER_WORD_SINGLE_TICK_MILLIS, TimeUnit.MILLISECONDS,
+                                    mockScheduler)
+                          .map(Long::floatValue)
+                          .filter(i -> i == WordsUseCase.HUNDRED_PERCENT));
+        gamePresenter.initialize();
+        mockScheduler.advanceTimeBy(WordsUseCase.PER_WORD_SINGLE_TICK_MILLIS * 201,
+                                    TimeUnit.MILLISECONDS);
+        verify(wordsUseCase).notAnswered();
+        verify(scoreUseCase).notAnswered();
     }
 
-    public void wrongClicked() {
-
+    @Test
+    public void shouldUpdateScoresOnInitialize() {
+        gamePresenter.initialize();
+        verify(gameView).updateScore(anyInt());
+        verify(gameView).updateHighscore(anyInt());
     }
 
+    @Test
+    public void shouldCallUsecaseOnCorrectAnswer() {
+        Word mockWord = new Word("English", "Spanish", true);
+        when(wordsUseCase.wordObservable()).thenReturn(Observable.just(mockWord));
+        gamePresenter.initialize();
+        gamePresenter.correctClicked();
+        verify(wordsUseCase).answered();
+        verify(scoreUseCase).rightAnswered();
+    }
+
+    @Test
+    public void shouldCallUsecaseOnWrongAnswer() {
+        Word mockWord = new Word("English", "Spanish", false);
+        when(wordsUseCase.wordObservable()).thenReturn(Observable.just(mockWord));
+        gamePresenter.initialize();
+        gamePresenter.wrongClicked();
+        verify(wordsUseCase).answered();
+        verify(scoreUseCase).rightAnswered();
+    }
+
+    @Test
+    public void shouldHandleGameEnd() {
+        TestScheduler testScheduler = new TestScheduler();
+        when(timerUseCase.tickObservable()).thenReturn(
+                Observable.interval(1, TimeUnit.SECONDS, testScheduler)
+                          .take(TimerUseCase.TOTAL_CLOCK_TICKS)
+                          .map(Long::intValue));
+        gamePresenter.initialize();
+        testScheduler.advanceTimeBy(TimerUseCase.TOTAL_CLOCK_TICKS, TimeUnit.SECONDS);
+        verify(highscoreUseCase).checkAndSaveHighscore(anyInt());
+        verify(gameView).closeGame();
+    }
 
 }
