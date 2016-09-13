@@ -1,5 +1,7 @@
 package com.birin.wordgame.core.timer;
 
+import java.util.concurrent.TimeUnit;
+
 import rx.Observable;
 import rx.Scheduler;
 
@@ -23,7 +25,7 @@ public class SecondClock implements Clock {
 
     @Override
     public Observable<Long> tick() {
-        return null;
+        return Observable.interval(interval, TimeUnit.SECONDS, clockScheduler);
     }
 
 }
