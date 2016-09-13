@@ -11,6 +11,8 @@ import rx.Observable;
  */
 public class AssetWordsRepository implements WordsRepository {
 
+    private static final String WORDS_FILE_NAME = "words.json";
+
     private AssetReader assetReader;
     private WordsParser wordsParser;
 
@@ -21,6 +23,19 @@ public class AssetWordsRepository implements WordsRepository {
 
     @Override
     public Observable<List<WordEntity>> getWords() {
-        return null;
+        return Observable.create(subscriber -> {
+            try {
+                String rawData = assetReader.readFileFromAssets(WORDS_FILE_NAME);
+                List<WordEntity> parsed = wordsParser.parse(rawData);
+                if (!subscriber.isUnsubscribed()) {
+                    subscriber.onNext(parsed);
+                    subscriber.onCompleted();
+                }
+            } catch (Exception e) {
+                if (!subscriber.isUnsubscribed()) {
+                    subscriber.onError(e);
+                }
+            }
+        });
     }
 }
