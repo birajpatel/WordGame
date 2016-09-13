@@ -1,4 +1,4 @@
-package com.birin.wordgame.timer;
+package com.birin.wordgame.domain.timer;
 
 import com.birin.wordgame.core.timer.Clock;
 
@@ -14,7 +14,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 
-import static com.birin.wordgame.timer.TimerUseCase.TOTAL_CLOCK_TICKS;
+import static com.birin.wordgame.domain.timer.TimerUseCase.TOTAL_CLOCK_TICKS;
 import static org.mockito.Mockito.when;
 
 /**

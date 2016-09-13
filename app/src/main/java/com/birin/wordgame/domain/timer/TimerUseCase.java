@@ -1,4 +1,4 @@
-package com.birin.wordgame.timer;
+package com.birin.wordgame.domain.timer;
 
 import com.birin.wordgame.core.timer.Clock;
 import com.birin.wordgame.core.timer.CountdownTimer;
