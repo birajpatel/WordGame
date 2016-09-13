@@ -16,11 +16,13 @@ public class HighscoreUseCase {
     }
 
     public void checkAndSaveHighscore(int finalScore) {
-
+        if (finalScore > highscoreRepository.currentHighscore()) {
+            highscoreRepository.updateHighscore(finalScore);
+        }
     }
 
     public Observable<Integer> highscoreObservable() {
-        return null;
+        return highscoreRepository.highscoreObservable();
     }
 
 }
