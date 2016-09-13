@@ -5,6 +5,7 @@ import android.content.Context;
 import com.birin.wordgame.core.score.HighscoreRepository;
 import com.birin.wordgame.domain.score.HighscoreUseCase;
 import com.birin.wordgame.presentation.MainApplication;
+import com.birin.wordgame.presentation.model.WordsModelMapper;
 
 import javax.inject.Singleton;
 
@@ -29,6 +30,11 @@ public class ApplicationModule {
         return mainApplication.getApplicationContext();
     }
 
+    @Provides
+    @Singleton
+    public WordsModelMapper provideWordsModelMapper() {
+        return new WordsModelMapper();
+    }
 
     @Provides
     @Singleton

@@ -9,7 +9,10 @@ import com.birin.wordgame.domain.words.Word;
 public class WordsModelMapper {
 
     public WordModel map(Word word) {
-        return null;
+        if (word == null) {
+            throw new IllegalArgumentException("Cannot transform a null value");
+        }
+        return new WordModel(word.getEnglishWord(), word.getSpanishWord());
     }
 
 }
